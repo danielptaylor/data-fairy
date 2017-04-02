@@ -1,0 +1,22 @@
+{
+   "Books": {
+           "sub": ["Romance","Action","Classic","Travel","Adventure"],
+           "prop_size": 100,
+           "average_price": 20},
+   "Toys": {
+           "sub": ["Sesame Street","Lego","Tonka","Barbie"], 
+           "prop_size": 50,
+           "average_price": 40},
+   "Health": {
+           "sub": ["Laxatives","Homeopath","Beeswax"], 
+           "prop_size": 40,
+           "average_price": 30},
+   "Movies": {
+           "sub": ["Romance","Action","Classic","Travel","Adventure"], 
+           "prop_size": 20,
+           "average_price": 20},
+   "Music": {
+           "sub": ["Grunge","Rock and Roll","Metal","Pop","Electronic", "Funk"], 
+           "prop_size": 20,
+           "average_price": 15}
+}
