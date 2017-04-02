@@ -6,14 +6,18 @@ Created on Sun Apr  2 19:52:42 2017
 @author: daniel
 """
 
+from DataFairy import DataFairy
 
-import importlib as imp
-import random_data
-imp.reload(random_data)
-from random_data import random_d
+data = DataFairy(nrows = 200000, product_count = 10000)
 
-data = random_d(nrows = 1000000, product_count = 10000)
+# Access transaction data like ...
 
-df = data.transaction_df
+trans = data.transaction_df
+
+# Access product table like ...
+
+product = data.product_df
+
+# Access flat_file (i.e. transaction data combined with product information) like this
 
 flat = data.flat_file

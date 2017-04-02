@@ -1,14 +1,13 @@
-#!/usr/bin/env python3
-# -*- coding: utf-8 -*-
 """
-Created on Sun Apr  2 16:57:54 2017
-
 @author: Daniel Taylor
+
+Generate 'random' data with underlying correlations and other non random features
 
 TODO: parameterize dates and cutomer_count
 TODO: Add capability to radar to specify time of day and week weightings
 TODO: Tidy arg setters. Looks gross in init
 TODO: Create customer dict before trans - probs easier to create correlations this way
+TODO: Add non-randomness
 
 """
 
@@ -17,10 +16,9 @@ import pandas as pd
 import random
 import json
 from datetime import datetime
-import radar 
+import radar
 
-
-class random_d:
+class DataFairy:
     
     def __init__(self, category_tree='Default', nrows = 10000, trans_per_customer = 5, products_per_transaction = 3, product_count = 100):
         
@@ -45,6 +43,8 @@ class random_d:
         self.product_df['product_id'] = self.product_df.index
         self.transaction_df = pd.DataFrame().from_dict(self.transaction_dict, orient='index')
         self.flat_file = pd.merge(self.transaction_df, self.product_df, on='product_id')
+        
+        print("WARNING: Data currently won't have non-random features. Work in progress")
     
     
     def build_product_table(self):
