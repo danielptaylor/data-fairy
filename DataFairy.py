@@ -8,6 +8,8 @@ TODO: Add capability to radar to specify time of day and week weightings
 TODO: Tidy arg setters. Looks gross in init
 TODO: Create customer dict before trans - probs easier to create correlations this way
 TODO: Add non-randomness
+TODO: Add region information
+TODO: Add market information, i.e. for region / demographics
 
 """
 
@@ -27,7 +29,7 @@ class DataFairy:
         for a in args:            
             setattr(self, a, eval(a))
             
-        self.customer_count = self.nrows / 5
+        self.customer_count = self.nrows / self.trans_per_customer
         self.date_min = datetime(2007, 1, 1)
         self.date_max = datetime(2017, 4, 2)
 
