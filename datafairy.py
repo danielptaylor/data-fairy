@@ -3,14 +3,12 @@
 
 Generate 'random' data with underlying correlations and other non random features
 
-TODO: parameterize dates and cutomer_count
 TODO: Add capability to radar to specify time of day and week weightings
-TODO: Tidy arg setters. Looks gross in init
 TODO: Create customer dict before trans - probs easier to create correlations this way
 TODO: Add non-randomness
 TODO: Add region information
 TODO: Add market information, i.e. for region / demographics
-
+TODO: parameterize dates
 """
 
 import numpy as np
@@ -22,9 +20,9 @@ import radar
 
 class DataFairy:
     
-    def __init__(self, category_tree='Default', nrows = 10000, trans_per_customer = 5, products_per_transaction = 3, product_count = 100):
+    def __init__(self, nrows = 10000, trans_per_customer = 5, products_per_transaction = 3, product_count = 100):        
         
-        args = ['category_tree','nrows','trans_per_customer','products_per_transaction','product_count']
+        args = ['nrows','trans_per_customer','products_per_transaction','product_count']
         
         for a in args:            
             setattr(self, a, eval(a))
@@ -32,10 +30,8 @@ class DataFairy:
         self.customer_count = self.nrows / self.trans_per_customer
         self.date_min = datetime(2007, 1, 1)
         self.date_max = datetime(2017, 4, 2)
-
-        
-        if self.category_tree == 'Default':
-            self.category_tree = json.loads(open('product_tables/default.json').read())
+        self.category_tree = json.loads(open('defaults/product_1.json').read())
+        self.demographics = json.loads(open('defaults/customer_1.json').read())
         
         self.product_dict = self.build_product_table()
         self.transaction_dict = self.build_transaction_data()    
@@ -73,6 +69,14 @@ class DataFairy:
         print("Product table built")
                 
         return product_dict
+    
+    
+    def build_customer_table(self):
+        
+        customer_id = 0
+        customer_dict = {}
+        
+        return customer_dict
     
     
     def build_transaction_data(self):

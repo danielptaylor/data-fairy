@@ -6,7 +6,7 @@ Created on Sun Apr  2 19:52:42 2017
 @author: daniel
 """
 
-from DataFairy import DataFairy
+from datafairy import DataFairy
 
 data = DataFairy(nrows = 200000, product_count = 10000)
 

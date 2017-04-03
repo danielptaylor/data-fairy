@@ -1,0 +1,14 @@
+{
+   "gender": {
+           "Female": 0.6,
+           "Male":0.4
+           },
+   "average_age": 40,
+   "region": {
+           "Auckland": 0.4,
+           "Wellington": 0.2,
+           "Christchurch": 0.2,
+           "Dunedin": 0.1,
+           "Blenheim": 0.05,
+           "Ohope": 0.05}              
+}

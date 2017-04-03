@@ -8,11 +8,11 @@
            "prop_size": 50,
            "average_price": 40},
    "Health": {
-           "sub": ["Laxatives","Homeopath","Beeswax"], 
+           "sub": ["Laxatives","Homeopath","Beeswax","Snake Oil"], 
            "prop_size": 40,
            "average_price": 30},
    "Movies": {
-           "sub": ["Romance","Action","Classic","Travel","Adventure"], 
+           "sub": ["Romance","Action","Comedy","Travel","Adventure"], 
            "prop_size": 20,
            "average_price": 20},
    "Music": {
