@@ -1,0 +1,24 @@
+{
+   "weekday": {
+           "Monday": 1,
+           "Tuesday":1,
+           "Wednesday":1.1,
+           "Thursday":1.1,
+           "Friday":0.9,
+           "Saturday":0.6,
+           "Sunday": 0.6
+           },
+   "month": {
+           "Jan": 0.7,
+           "Feb": 0.8,
+           "Mar": 0.9,
+           "Apr": 0.9,
+           "May": 0.9,
+           "Jun": 1.1,
+           "Jul": 1,
+           "Aug": 1,
+           "Sep": 1,
+           "Oct": 1.2,
+           "Nov": 1.2,
+           "Dec": 1.3}              
+}
