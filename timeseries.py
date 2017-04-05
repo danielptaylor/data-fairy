@@ -105,20 +105,12 @@ class TimeSeries:
     
     def get_month_weighted_adjust(self, day_i):
         
-        if day_i.month == 12:
-            prev_month = 'Nov'
-            this_month = 'Dec'
-            next_month = 'Jan'
-        elif day_i.month == 1:            
-            prev_month = 'Dec'
-            this_month = 'Jan'
-            next_month = 'Feb'
-        else:
-            prev_month = cal.month_abbr[day_i.month - 1]
-            this_month = cal.month_abbr[day_i.month]
-            next_month = cal.month_abbr[day_i.month + 1]
+        month_i = day_i.month
+        prev_month = cal.month_abbr[12 if month_i == 1 else month_i - 1]
+        this_month = cal.month_abbr[month_i]
+        next_month = cal.month_abbr[1 if month_i == 12 else month_i + 1]
             
-        month_len = cal.monthrange(day_i.year, day_i.month)[1]
+        month_len = cal.monthrange(day_i.year, month_i)[1]
         
         weights = {}
         
