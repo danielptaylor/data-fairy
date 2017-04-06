@@ -2,7 +2,7 @@
 @author: Daniel Taylor
 
 TODO: Add exponential growth option
-TODO: Make variance a function of growth, as it looks flat wth high growth, and a mess with low. or is this more realistic?
+TODO: Make variance a function of growth, as it looks flat wth high growth, and a mess with low. or is this actually more realistic?
 
 """
 
@@ -93,7 +93,7 @@ class TimeSeries:
             self.time_series_dict[i] = self.time_series_dict[i] * rand_element * month_element
     
     
-    def get_month_adjust(self, date_i):      
+    def get_month_adjust(self, date_i):
         
         this_adjust = self.get_month_weighted_adjust(date_i)
                 
@@ -126,7 +126,45 @@ class TimeSeries:
         self.checker[day_i] = weight_list
                     
         return weight_adj
+    
+    
+    def year_month_proportion(self):
+        
+        df = self.get_df()
+        
+        df['proportion'] = df['value'].apply(lambda x: x / sum(df['value']))        
+        
+        df['period'] = df.index.map(lambda x: x.replace(day=1))
+        
+        monthly = df.groupby(['period'])['proportion'].sum()
+        
+        return monthly
+    
+    
+    def year_week_proportion(self):
+        
+        df = self.get_df()
+        
+        df['proportion'] = df['value'].apply(lambda x: x / sum(df['value']))        
+        
+        df['period'] = df.index.map(lambda x: x.strftime('%Y-%W'))
+        
+        monthly = df.groupby(['period'])['proportion'].sum()
+        
+        return monthly
+    
+    
+    """
+    Bit of convenience
+    """
                 
         
     def plot(self):
         self.time_series_df.plot()
+        
+        
+    def get_df(self):
+        return self.time_series_df
+    
+    
+    
