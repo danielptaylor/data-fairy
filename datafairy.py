@@ -55,11 +55,9 @@ class DataFairy:
         print("Creating dataframes ...")
         self.product_df = pd.DataFrame().from_dict(self.product_dict, orient='index')
         self.product_df['product_id'] = self.product_df.index
-        self.transaction_df = pd.DataFrame().from_dict(self.transaction_dict, orient='index')
-        #self.transaction_df['datetime'] = self.transaction_df['datetime'].apply(lambda x: dt.datetime.strptime(x,'%Y-%m-%d'))
+        self.transaction_df = pd.DataFrame().from_dict(self.transaction_dict, orient='index')        
         
-        
-        print("WARNING: Data currently won't have non-random features. Work in progress")
+        print("WARNING: Data currently won't have all non-random features. Work in progress")
     
     
     def build_product_table(self):
@@ -176,7 +174,7 @@ class DataFairy:
         
     def get_quantity(self, args):
         
-        return random.randint(1,3)
+        return max(round(np.random.normal(1.2,0.5)),1)
     
     
 
