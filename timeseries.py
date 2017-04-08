@@ -11,12 +11,15 @@ import pandas as pd
 from datetime import timedelta, datetime
 import json
 import calendar as cal
+import os
 
 class TimeSeries:
     
     def __init__(self, start_value=100000, annual_trend=0, 
                  variability=0.005, start_date="2014-01-01", days=900):     
         
+        self.base_dir = os.path.dirname(__file__)
+                                        
         for a in ['start_value', 'variability', 'start_date', 'days']:            
             setattr(self, a, eval(a))   
         
@@ -77,7 +80,7 @@ class TimeSeries:
     
     def get_weekday_adjust(self, date_i):
         
-        week_adjust = json.loads(open('defaults/time_1.json').read())['weekday']        
+        week_adjust = json.loads(open(self.base_dir + '/defaults/time_1.json').read())['weekday']        
         weekday_name = cal.day_name[date_i.weekday()]
         this_adjust = week_adjust[weekday_name]
         
@@ -123,7 +126,7 @@ class TimeSeries:
         
         sum_from = sum(weights.values())
         
-        month_adjust = json.loads(open('defaults/time_1.json').read())['month']
+        month_adjust = json.loads(open(self.base_dir + '/defaults/time_1.json').read())['month']
         weight_list = [i / (sum_from) * month_adjust[k] for k, i in weights.items() if k != '']
         weight_adj = sum(weight_list)
         self.checker[day_i] = {'list':weight_list, 'actual': sum(weight_list)}

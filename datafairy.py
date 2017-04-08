@@ -19,11 +19,13 @@ from datetime import datetime, timedelta
 import datetime as dt
 import timeseries as ts
 import calendar as cal
+import os
+
 
 class DataFairy:
     
-    def __init__(self, nrows = 10000, trans_per_customer = 5, products_per_transaction = 3, 
-                 product_count = 100, start_date = "2014-01-01", days = 900, annual_trend = 0.2):        
+    def __init__(self, nrows = 1000000, trans_per_customer = 5, products_per_transaction = 3, 
+                 product_count = 1000, start_date = "2014-01-01", days = 730, annual_trend = 0.1):        
         
         args = ['nrows','trans_per_customer','products_per_transaction','product_count','days', 'annual_trend']
         
@@ -37,6 +39,7 @@ class DataFairy:
         self.daily_allocation = None
         self.daily_proportion = None
         self.month_day_selection = {}
+        self.base_dir = os.path.dirname(__file__)
         
         unique_days = [self.start_date + timedelta(days=x) for x in range(0, days)]
         unique_months = list(set([i.replace(day=1) for i in unique_days]))
@@ -44,7 +47,7 @@ class DataFairy:
         for i in unique_months:
             self.month_day_selection[i] = None
         
-        self.demographics = json.loads(open('defaults/customer_1.json').read())
+        self.demographics = json.loads(open(self.base_dir + '/defaults/customer_1.json').read())
         
         self.product_dict = self.build_product_table()
         self.transaction_dict = self.build_transaction_data()    
@@ -61,7 +64,7 @@ class DataFairy:
     
     def build_product_table(self):
        
-        self.category_tree = json.loads(open('defaults/product_1.json').read())
+        self.category_tree = json.loads(open(self.base_dir + '/defaults/product_1.json').read())
         ct = self.category_tree
         total_prop = sum([ct[c]['prop_size'] for c in ct.keys()])
         
