@@ -131,47 +131,6 @@ class TimeSeries:
         return weight_adj
     
     
-    def year_month_proportion(self):
-        
-        df = self.get_df()
-        
-        df['proportion'] = df['value'].apply(lambda x: x / sum(df['value']))        
-        
-        df['period'] = df.index.map(lambda x: x.replace(day=1))
-        
-        monthly = df.groupby(['period'])['proportion'].sum()
-        
-        return monthly
-    
-    
-    def year_week_proportion(self):
-        
-        df = self.get_df()
-        
-        df['proportion'] = df['value'].apply(lambda x: x / sum(df['value']))        
-        
-        df['period'] = df.index.map(lambda x: x.strftime('%Y-%W'))
-        
-        weekly = df.groupby(['period'])['proportion'].sum()
-        
-        return weekly
-    
-    
-    def daily_proportion_old(self, month_date):
-        
-        df = self.get_df()
-        
-        this_df = df[(df.index.year == month_date.year) & (df.index.month == month_date.month)]
-        
-        this_df['proportion'] = this_df['value'].apply(lambda x: x / sum(this_df['value']))        
-        
-        this_df['period'] = this_df.index
-        
-        daily = this_df.groupby(['period'])['proportion'].sum()
-        
-        return daily
-    
-    
     def get_daily_proportion(self):
         df = self.get_df()
         daily_proportion = df['value'].apply(lambda x: (x / sum(df['value'])))

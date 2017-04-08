@@ -16,9 +16,7 @@ import pandas as pd
 import random
 import json
 from datetime import datetime, timedelta
-from dateutil import relativedelta as rd
 import datetime as dt
-import radar
 import timeseries as ts
 import calendar as cal
 
@@ -177,35 +175,6 @@ class DataFairy:
         
         return random.randint(1,3)
     
-    
-    def get_year_month(self):
-        
-        if self.month_selection == None:
-                # Create weighted month selction if not already done
-            
-            self.time_s = ts.TimeSeries(days=self.days, start_date = self.start_date, annual_trend = self.annual_trend)
-            period_weights = self.time_s.year_month_proportion()
-            
-            periods = period_weights.index.astype(str).tolist()
-            weights = period_weights.tolist()   
-            
-            self.month_selection = np.random.choice(a=periods, size=self.nrows, p=weights)
-            
-        row_month = dt.datetime.strptime(random.choice(self.month_selection), '%Y-%m-%d')     
-        
-        return row_month
-    
-    
-    def get_date(self, year_month):
-        
-        if self.month_day_selection[year_month] == None:
-            
-            day_weights = self.time_s.daily_proportion(year_month)
-            self.month_day_selection[year_month] = np.random.choice(a=day_weights.index, size=1000000, p=day_weights)
-        
-        row_date = random.choice(self.month_day_selection[year_month])
-        
-        return row_date
     
 
     """
