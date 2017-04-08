@@ -16,6 +16,8 @@ import pandas as pd
 import random
 import json
 from datetime import datetime, timedelta
+from dateutil import relativedelta as rd
+import datetime as dt
 import radar
 import timeseries as ts
 import calendar as cal
@@ -28,12 +30,22 @@ class DataFairy:
         args = ['nrows','trans_per_customer','products_per_transaction','product_count','days', 'annual_trend']
         
         for a in args:            
-            setattr(self, a, eval(a))
+            setattr(self, a, eval(a))        
         
-        self.date_selection = None
         self.customer_count = self.nrows / self.trans_per_customer
-        self.date_min = datetime.strptime(start_date,"%Y-%m-%d")        
-        self.date_max = self.date_min + timedelta(days=days)        
+        self.start_date = datetime.strptime(start_date,"%Y-%m-%d")        
+        self.end_date = self.start_date + timedelta(days=days)
+        
+        self.daily_allocation = None
+        self.daily_proportion = None
+        self.month_day_selection = {}
+        
+        unique_days = [self.start_date + timedelta(days=x) for x in range(0, days)]
+        unique_months = list(set([i.replace(day=1) for i in unique_days]))
+        
+        for i in unique_months:
+            self.month_day_selection[i] = None
+        
         self.demographics = json.loads(open('defaults/customer_1.json').read())
         
         self.product_dict = self.build_product_table()
@@ -43,6 +55,7 @@ class DataFairy:
         self.product_df = pd.DataFrame().from_dict(self.product_dict, orient='index')
         self.product_df['product_id'] = self.product_df.index
         self.transaction_df = pd.DataFrame().from_dict(self.transaction_dict, orient='index')
+        #self.transaction_df['datetime'] = self.transaction_df['datetime'].apply(lambda x: dt.datetime.strptime(x,'%Y-%m-%d'))
         
         
         print("WARNING: Data currently won't have non-random features. Work in progress")
@@ -92,7 +105,7 @@ class DataFairy:
             
             trans_dict[i] = row        
                       
-            if self.nrows >= 100000 and i % 10000 == 0:
+            if self.nrows >= 100000 and i % 100000 == 0:
                 print(str(i) + " rows generated | " + str(i / self.nrows * 100) + "%")
         
         return trans_dict
@@ -130,30 +143,34 @@ class DataFairy:
     
     def get_datetime(self, args):
         
-        if self.date_selection == None:
-            
-            time_s = ts.TimeSeries(days=self.days, annual_trend = self.annual_trend)
-            period_weights = time_s.year_week_proportion()
-            
-            periods = period_weights.index.astype(str).tolist()
-            weights = period_weights.tolist()   
-            
-            self.date_selection = np.random.choice(a=periods, size=self.nrows, p=weights)
-        
         try:
-            # Get existing datetime for transaction if exists        
-            return self.trans_datetime[args['transaction_id']]
+            # Get existing datetime for transaction if exists
+            row_date = self.trans_datetime[args['transaction_id']]
+            self.daily_allocation[row_date] -= 1
+            return row_date
         
-        except KeyError:                    
+        except KeyError:
+            # Generate pseudo random date it no date exists for transaction
             
-            row_datetime = random.choice(self.date_selection)
+            if self.daily_allocation == None:
+                time_s = ts.TimeSeries(days=self.days, start_date = self.start_date, annual_trend = self.annual_trend)
+                self.daily_proportion = time_s.get_daily_proportion()
+                self.daily_allocation = self.daily_proportion * (self.nrows)
+                self.daily_allocation = self.daily_allocation.to_dict()
+                
+            try:
+                row_date = random.choice(list(self.daily_allocation.keys()))
+                
+                if self.daily_allocation[row_date] <= 0:
+                    self.daily_allocation.pop(row_date,None)                
+                self.daily_allocation[row_date] -= 1
+                                     
+            except KeyError:                
+                row_date = random.choice(self.daily_proportion.index)
             
-            place_dt = datetime.strptime(row_datetime + '-0','%Y-%W-%w')            
-            
-            row_datetime_dt = datetime(place_dt.year, place_dt.month, place_dt.day)
-            self.trans_datetime[args['transaction_id']] = row_datetime_dt
-                               
-            return row_datetime_dt
+            self.trans_datetime[args['transaction_id']] = row_date
+                                           
+            return row_date
         
         
     def get_quantity(self, args):
@@ -161,7 +178,34 @@ class DataFairy:
         return random.randint(1,3)
     
     
+    def get_year_month(self):
+        
+        if self.month_selection == None:
+                # Create weighted month selction if not already done
+            
+            self.time_s = ts.TimeSeries(days=self.days, start_date = self.start_date, annual_trend = self.annual_trend)
+            period_weights = self.time_s.year_month_proportion()
+            
+            periods = period_weights.index.astype(str).tolist()
+            weights = period_weights.tolist()   
+            
+            self.month_selection = np.random.choice(a=periods, size=self.nrows, p=weights)
+            
+        row_month = dt.datetime.strptime(random.choice(self.month_selection), '%Y-%m-%d')     
+        
+        return row_month
     
+    
+    def get_date(self, year_month):
+        
+        if self.month_day_selection[year_month] == None:
+            
+            day_weights = self.time_s.daily_proportion(year_month)
+            self.month_day_selection[year_month] = np.random.choice(a=day_weights.index, size=1000000, p=day_weights)
+        
+        row_date = random.choice(self.month_day_selection[year_month])
+        
+        return row_date
     
 
     """

@@ -15,11 +15,14 @@ import calendar as cal
 class TimeSeries:
     
     def __init__(self, start_value=100000, annual_trend=0, 
-                 variability=0.001, start_date="2014-01-01", days=900):     
+                 variability=0.005, start_date="2014-01-01", days=900):     
         
-        for a in ['start_value', 'variability', 'days']:            
-            setattr(self, a, eval(a))        
-        self.start_date = datetime.strptime(start_date,"%Y-%m-%d")
+        for a in ['start_value', 'variability', 'start_date', 'days']:            
+            setattr(self, a, eval(a))   
+        
+        if type(start_date) == str:
+               self.start_date = datetime.strptime(start_date,"%Y-%m-%d")
+        
         self.annual_trend = np.random.normal(annual_trend, 0.07)
         
         self.time_series_dict = {}
@@ -29,6 +32,7 @@ class TimeSeries:
         self.month_adjust()
         
         self.time_series_df = pd.DataFrame().from_dict(self.time_series_dict, orient='index')
+        
         self.time_series_df.columns = ['value']        
     
     
@@ -47,7 +51,7 @@ class TimeSeries:
     
     def get_date_value(self, place, dateval):        
         
-        growth_this = np.random.normal(0, self.variability)
+        random_element = np.random.normal(0, self.variability)
     
         try:
             prev_value = self.time_series_dict[dateval - timedelta(days=1)]
@@ -55,9 +59,9 @@ class TimeSeries:
             prev_growth = (prev_value - prev_prev_value) / prev_prev_value
         except KeyError:
             prev_value = self.start_value
-            prev_growth = growth_this
+            prev_growth = random_element
         
-        multiplier = 1 + (self.annual_trend / 365) + (prev_growth / prev_value) + growth_this        
+        multiplier = 1 + (self.annual_trend / 365) + (prev_growth / prev_value) + random_element        
         
         return prev_value * multiplier
     
@@ -73,9 +77,8 @@ class TimeSeries:
     
     def get_weekday_adjust(self, date_i):
         
-        week_adjust = json.loads(open('defaults/time_1.json').read())['weekday']
-        weekday_no = date_i.weekday()
-        weekday_name = cal.day_name[weekday_no]
+        week_adjust = json.loads(open('defaults/time_1.json').read())['weekday']        
+        weekday_name = cal.day_name[date_i.weekday()]
         this_adjust = week_adjust[weekday_name]
         
         dif = this_adjust - 1
@@ -123,7 +126,7 @@ class TimeSeries:
         month_adjust = json.loads(open('defaults/time_1.json').read())['month']
         weight_list = [i / (sum_from) * month_adjust[k] for k, i in weights.items() if k != '']
         weight_adj = sum(weight_list)
-        self.checker[day_i] = weight_list
+        self.checker[day_i] = {'list':weight_list, 'actual': sum(weight_list)}
                     
         return weight_adj
     
@@ -149,9 +152,31 @@ class TimeSeries:
         
         df['period'] = df.index.map(lambda x: x.strftime('%Y-%W'))
         
-        monthly = df.groupby(['period'])['proportion'].sum()
+        weekly = df.groupby(['period'])['proportion'].sum()
         
-        return monthly
+        return weekly
+    
+    
+    def daily_proportion_old(self, month_date):
+        
+        df = self.get_df()
+        
+        this_df = df[(df.index.year == month_date.year) & (df.index.month == month_date.month)]
+        
+        this_df['proportion'] = this_df['value'].apply(lambda x: x / sum(this_df['value']))        
+        
+        this_df['period'] = this_df.index
+        
+        daily = this_df.groupby(['period'])['proportion'].sum()
+        
+        return daily
+    
+    
+    def get_daily_proportion(self):
+        df = self.get_df()
+        daily_proportion = df['value'].apply(lambda x: (x / sum(df['value'])))
+        
+        return daily_proportion
     
     
     """
@@ -165,6 +190,4 @@ class TimeSeries:
         
     def get_df(self):
         return self.time_series_df
-    
-    
     
